@@ -1,0 +1,26 @@
+= DeskOS: thunderbird RPM
+
+This is the _thunderbird_ RPM package for the *DeskOS* operating system.
+
+Upstream comes from CentOS 7.3:
+http://vault.centos.org/7.3.1611/updates/Source/SPackages/thunderbird-45.6.0-1.el7.centos.src.rpm[thunderbird-45.6.0-1.el7.centos.src.rpm]
+
+== Patches for DeskOS
+
+=== l10n-lightning-45.6.0-deskos.tar.xz
+It was necessary to create a patched _l10n-lightning-45.6.0-deskos.tar.xz_ to fix a bug in the Lightning _es-AR_ locale.
+The patch used is available here: https://hg.mozilla.org/releases/l10n/mozilla-release/es-AR/rev/5d3069b267c1
+
+How to create _l10n-lightning-45.6.0-deskos.tar.xz_:
+
+----
+mkdir /var/tmp/l10n-lightning-45.6.0/
+tar xaf SOURCES/l10n-lightning-45.6.0.tar.xz -C /var/tmp/l10n-lightning-45.6.0/
+cd /var/tmp/l10n-lightning-45.6.0/
+
+wget -O es-AR-fixing-calendar.patch https://hg.mozilla.org/releases/l10n/mozilla-release/es-AR/raw-rev/5d3069b267c1
+cd l10n-merged/es-AR/
+patch -p1 < ../../es-AR-fixing-calendar.patch
+cd ../../
+tar caf l10n-lightning-45.6.0-deskos.tar.xz l10n-merged
+----

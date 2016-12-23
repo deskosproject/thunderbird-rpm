@@ -93,7 +93,7 @@ ExcludeArch: ppc ia64
 Summary:        Mozilla Thunderbird mail/newsgroup client
 Name:           thunderbird
 Version:        45.6.0
-Release:        1%{?dist}
+Release:        1.1%{?dist}
 URL:            http://www.mozilla.org/projects/thunderbird/
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 Group:          Applications/Internet
@@ -110,7 +110,8 @@ Source0:        https://archive.mozilla.org/pub/thunderbird/releases/%{version}%
 Source1:        thunderbird-langpacks-%{version}%{?ext_version}-20161216.tar.xz
 %endif
 # Locales for lightning
-Source2:        l10n-lightning-%{version}.tar.xz
+# DeskOS: Patch to fix the Lightning 'es-AR' locale: https://hg.mozilla.org/releases/l10n/mozilla-release/es-AR/rev/5d3069b267c1
+Source2:        l10n-lightning-%{version}-deskos.tar.xz
 Source3:        mklangsource.sh
 
 Source10:       thunderbird-mozconfig
@@ -947,6 +948,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 #===============================================================================
 
 %changelog
+* Thu Dec 22 2016 Ricardo Arguello <rarguello@deskosproject.org> - 45.6.0-1.1
+- Rebuilt for DeskOS
+
 * Wed Dec 21 2016 Johnny Hughes <johnny@centos.org> - 45.6.0-1
 - Manual CentOS Debranding
  

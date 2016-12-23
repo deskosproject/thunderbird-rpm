@@ -2,6 +2,7 @@ SOURCES/Python-2.7.8.tgz
 SOURCES/devtoolset-2-binutils-2.23.52.0.1-10.el5.src.rpm
 SOURCES/gcc48-4.8.2-16.el5.src.rpm
 SOURCES/l10n-lightning-45.6.0.tar.xz
+SOURCES/l10n-lightning-45.6.0-deskos.tar.xz
 SOURCES/thunderbird-45.6.0.source.tar.xz
 SOURCES/thunderbird-langpacks-45.6.0-20161216.tar.xz
 SOURCES/yasm-1.2.0-3.el5.src.rpm

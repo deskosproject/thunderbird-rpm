@@ -1,7 +1,8 @@
-511960dd78451a06c9df76509635aeec05b2051a SOURCES/Python-2.7.8.tgz
-467bdb846d67c01aed9e521fe0ef280065a50c3c SOURCES/devtoolset-2-binutils-2.23.52.0.1-10.el5.src.rpm
-e5ba84786af5d0e0e23b1a9112c76821ef23306c SOURCES/gcc48-4.8.2-16.el5.src.rpm
-5b66b933d195551e7d608de7bea2e4b2fad3b3d0 SOURCES/l10n-lightning-45.6.0.tar.xz
-feaa230faff78d9016332375a9f0bd089474b89c SOURCES/thunderbird-45.6.0.source.tar.xz
-f27df8ad9a1eedab5f0386a990e2091986246493 SOURCES/thunderbird-langpacks-45.6.0-20161216.tar.xz
-77fd30f7ebc12a629a31c1e252cec06af55a71fe SOURCES/yasm-1.2.0-3.el5.src.rpm
+74d70b914da4487aa1d97222b29e9554d042f825f26cb2b93abd20fdda56b557  SOURCES/Python-2.7.8.tgz
+45bfffc75e934ab9d7868ebb38e7b8281a6b5e318f4ef497048a8693fbee93a3  SOURCES/devtoolset-2-binutils-2.23.52.0.1-10.el5.src.rpm
+58d704b4c4d5cdddd5cf8a7d721d3331685a13905c7a05bd8f1fe3f621fa507a  SOURCES/gcc48-4.8.2-16.el5.src.rpm
+56b3ac9190bc5bf3de52df84254d848650e1f4c1fe3782d663b4a45e60c1b500  SOURCES/l10n-lightning-45.6.0.tar.xz
+055f95cbd32d960121fba93c2b2a928c6f6d4f20e929c58c37fea693909ac354  SOURCES/l10n-lightning-45.6.0-deskos.tar.xz
+88276c82ba07d94ea19a6b47f9c2de8b09c20a504ecafd8ba7d2f40ca7afb370  SOURCES/thunderbird-45.6.0.source.tar.xz
+3c1ba80232cb9c6b7842e3d8f9a2bb065a30a9db60fc14e66aa9044fe5d988ba  SOURCES/thunderbird-langpacks-45.6.0-20161216.tar.xz
+f5601efaad39b4b24b91208ee9eb7c36c18ef116cb59fc837bd86c71ed188d28  SOURCES/yasm-1.2.0-3.el5.src.rpm

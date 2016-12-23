@@ -1,0 +1,338 @@
+
+# HG changeset patch
+# User Marcelo Poli <mpoli@lt24.zzn.com>
+# Date 1455468052 10800
+# Node ID 5d3069b267c1747dd6c49c3055b7cfbe211ac6a9
+# Parent  0061be317170051c6e851ad708e91ca059482533
+Fixing calendar
+
+diff --git a/calendar/chrome/calendar/calendar-event-dialog.dtd b/calendar/chrome/calendar/calendar-event-dialog.dtd
+--- a/calendar/chrome/calendar/calendar-event-dialog.dtd
++++ b/calendar/chrome/calendar/calendar-event-dialog.dtd
+@@ -28,17 +28,19 @@
+ 
+ <!-- The following entity is for New Task dialog only -->
+ <!ENTITY newtodo.percentcomplete.label      "&#37; completado">
+ 
+ <!-- LOCALIZATON NOTE(event.attendees.notify.label,event.attendees.notifyundisclosed.label)
+    - These two labels are displayed side by side in the event dialog, make sure
+    - they still fit in. -->
+ <!ENTITY event.attendees.notify.label               "Notificar a los asistentes">
++<!ENTITY event.attendees.notify.accesskey           "f">
+ <!ENTITY event.attendees.notifyundisclosed.label    "Invitaciones separadas por asistente">
++<!ENTITY event.attendees.notifyundisclosed.accesskey  "I">
+ <!ENTITY event.attendees.notifyundisclosed.tooltip  "Esta opción envía un correo de invitación por cada asistente. Cada invitación solamente contiene como destinatario al asistente como para que las identidades de los otros asistentes no se divulguen.">
+ 
+ 
+ <!-- Keyboard Shortcuts -->
+ <!ENTITY event.dialog.new.event.key2              "I">
+ <!ENTITY event.dialog.new.task.key2               "D">
+ <!ENTITY event.dialog.new.message.key2            "N">
+ <!ENTITY event.dialog.close.key                   "W">
+@@ -133,17 +135,21 @@
+ <!ENTITY  event.menu.options.show.time.free.label         "Libre">
+ <!ENTITY  event.menu.options.show.time.free.accesskey     "L">
+ 
+ <!ENTITY event.invite.attendees.label                     "Invitar participantes…">
+ <!ENTITY event.invite.attendees.accesskey                 "I">
+ <!ENTITY event.email.attendees.label                      "Redactar correo electrónico a todos los participantes…">
+ <!ENTITY event.email.attendees.accesskey                  "T">
+ <!ENTITY event.email.tentative.attendees.label            "Redactar correo electrónico a los participantes indecisos…">
+-<!ENTITY event.email.tentative.attendees.accesskey        "R">
++<!ENTITY event.email.tentative.attendees.accesskey        "c">
++<!ENTITY event.remove.attendees.label2                    "Eliminar todos los asistentes">
++<!ENTITY event.remove.attendees.accesskey                 "r">
++<!ENTITY event.remove.attendee.label                      "Eliminar asistente">
++<!ENTITY event.remove.attendee.accesskey                  "E">
+ 
+ <!-- Toolbar -->
+ <!ENTITY  event.toolbar.save.label                        "Guardar y cerrar">
+ <!ENTITY  event.toolbar.delete.label                      "Borrar">
+ <!ENTITY  event.toolbar.attendees.label                   "Invitar participantes">
+ <!ENTITY  event.toolbar.privacy.label                     "Privacidad">
+ 
+ <!ENTITY  event.toolbar.save.tooltip                      "Guardar y cerrar">
+@@ -350,16 +356,17 @@
+ <!ENTITY event.attendee.role.required           "Asistencia obligatoria">
+ <!ENTITY event.attendee.role.optional           "Asistencia opcional">
+ <!ENTITY event.attendee.role.chair              "Coordinador">
+ <!ENTITY event.attendee.role.nonparticipant     "No participante">
+ <!ENTITY event.attendee.usertype.individual     "Individual">
+ <!ENTITY event.attendee.usertype.group          "Grupo">
+ <!ENTITY event.attendee.usertype.resource       "Recurso">
+ <!ENTITY event.attendee.usertype.room           "Salón">
++<!ENTITY event.attendee.usertype.unknown        "Desconocido">
+ 
+ <!-- Timezone dialog -->
+ <!ENTITY timezone.title.label            "Especifique el huso horario">
+ <!ENTITY event.timezone.custom.label     "Más husos horarios…">
+ 
+ <!-- Read-Only dialog -->
+ <!ENTITY read.only.general.label         "General">
+ <!ENTITY read.only.title.label           "Título:">
+diff --git a/calendar/chrome/calendar/calendar.dtd b/calendar/chrome/calendar/calendar.dtd
+--- a/calendar/chrome/calendar/calendar.dtd
++++ b/calendar/chrome/calendar/calendar.dtd
+@@ -144,17 +144,17 @@
+ <!ENTITY calendar.task-details.attachments.label     "adjuntos">
+ <!ENTITY calendar.task-details.start.label           "fecha de inicio">
+ <!ENTITY calendar.task-details.due.label             "fecha de fin">
+ 
+ <!ENTITY calendar.task.category.button.tooltip  "Categorizar tareas">
+ <!ENTITY calendar.task.complete.button.tooltip  "Marcar tareas seleccionadas como completas">
+ <!ENTITY calendar.task.priority.button.tooltip  "Cambiar la prioridad">
+ 
+-<!ENTITY calendar.task.text-filter.textbox.emptytext.base            "Filtrar tareas… #1">
++<!ENTITY calendar.task.text-filter.textbox.emptytext.base1           "Filtrar tareas #1">
+ <!ENTITY calendar.task.text-filter.textbox.emptytext.keylabel.nonmac "&lt;Ctrl+May+K&gt;">
+ <!ENTITY calendar.task.text-filter.textbox.emptytext.keylabel.mac    "&lt;&#x21E7;&#x2318;K&gt;">
+ 
+ <!-- Context Menu -->
+ <!ENTITY calendar.context.modifyorviewitem.label      "Abrir">
+ <!ENTITY calendar.context.modifyorviewitem.accesskey  "A">
+ <!ENTITY calendar.context.modifyorviewtask.label      "Abrir tarea…">
+ <!ENTITY calendar.context.modifyorviewtask.accesskey  "A">
+diff --git a/calendar/chrome/calendar/calendar.properties b/calendar/chrome/calendar/calendar.properties
+--- a/calendar/chrome/calendar/calendar.properties
++++ b/calendar/chrome/calendar/calendar.properties
+@@ -101,18 +101,16 @@ removeCalendarMessageDeleteOrUnsubscribe
+ removeCalendarMessageDelete=¿Desea borrar de forma permanente el calendario "%1$S"?
+ 
+ # LOCALIZATION NOTE (removeCalendarMessageUnsubscribe): Shown for calendar
+ # where unsubscribing is the only option.
+ # %1$S:  The name of a calendar
+ removeCalendarMessageUnsubscribe=¿Desea desuscribirse del calendario "%1$S"?
+ 
+ WeekTitle = Semana %1$S
+-# Used to format the Multiweek's labels, ie Weeks 2 - 7
+-WeeksTitle = Semanas %1$S-%2$S
+ None = Nada
+ 
+ # Error strings
+ ## @name UID_NOT_FOUND
+ ## @loc none
+ tooNewSchemaErrorBoxTitle=La información de su calendario no es compatible con esta versión de  %1$S
+ 
+ # LOCALIZATION NOTE (tooNewSchemaErrorBoxTextLightning):
+@@ -147,16 +145,85 @@ tooltipOrganizer=Organizador:
+ # task/todo fields
+ # start date time, due date time, task priority number, completed date time
+ tooltipStart = Inicio:
+ tooltipDue = Vencimiento:
+ tooltipPriority = Prioridad:
+ tooltipPercent = % Completo:
+ tooltipCompleted = Finalizado:
+ 
++# Tooltips for attendees and organizer in event and summary dialog
++
++# LOCALIZATION_NOTE(dialog.tooltip.attendee.combined): tooltip for itip icon in summary/event dialog.
++# Given an attendee loungeexample.org of type room is a mandatory participant and has accepted the
++# invitation, the tooltip would be:
++# lounge@example.org (room) is a required participant. lounge@example.org has confirmed attendance.
++# %1$S - value of dialog.tooltip.attendeeRole2.*
++# %2$S - value of dialog.tooltip.attendeePartStat2.*
++dialog.tooltip.attendee.combined=%1$S %2$S
++
++# LOCALIZATION_NOTE(dialog.tooltip.attendeeRole2.CHAIR): used to compose
++# dialog.tooltip.attendee.combined
++# %1$S - value of dialog.tooltip.attendeeUserType2.*
++dialog.tooltip.attendeeRole2.CHAIR=%1$S preside el evento.
++# LOCALIZATION_NOTE(dialog.tooltip.attendeeRole2.NON-PARTICIPANT): used to compose
++# dialog.tooltip.attendee.combined
++# %1$S - value of dialog.tooltip.attendeeUserType2.*
++dialog.tooltip.attendeeRole2.NON-PARTICIPANT=%1$S es no-partícipe.
++# LOCALIZATION_NOTE(dialog.tooltip.attendeeRole2.OPT-PARTICIPANT): used to compose
++# dialog.tooltip.attendee.combined
++# %1$S - value of dialog.tooltip.attendeeUserType2.*
++dialog.tooltip.attendeeRole2.OPT-PARTICIPANT=%1$S es partícipe opcional.
++# LOCALIZATION_NOTE(dialog.tooltip.attendeeRole2.REQ-PARTICIPANT): used to compose
++# dialog.tooltip.attendee.combined
++# %1$S - value of dialog.tooltip.attendeeUserType2.*
++dialog.tooltip.attendeeRole2.REQ-PARTICIPANT=%1$S es partícipe requerido.
++
++# LOCALIZATION_NOTE(dialog.tooltip.attendeePartStat2.ACCEPTED): used to compose
++# dialog.tooltip.attendee.combined
++# %1$S - common name or email address of the attendee
++dialog.tooltip.attendeePartStat2.ACCEPTED=%1$S ha confirmado asistencia.
++# LOCALIZATION_NOTE(dialog.tooltip.attendeePartStat2.DECLINED): used to compose
++# dialog.tooltip.attendee.combined
++# %1$S - common name or email address of the attendee
++dialog.tooltip.attendeePartStat2.DECLINED=%1$S ha declinado asistencia.
++# LOCALIZATION_NOTE(dialog.tooltip.attendeePartStat2.DELEGATED): used to compose
++# dialog.tooltip.attendee.combined
++# %1$S - common name or email address of the attendee
++dialog.tooltip.attendeePartStat2.DELEGATED=%1$S ha delegado asistencia.
++# LOCALIZATION_NOTE(dialog.tooltip.attendeePartStat2.NEEDS-ACTION): used to compose
++# dialog.tooltip.attendee.combined
++# %1$S - common name or email address of the attendee
++dialog.tooltip.attendeePartStat2.NEEDS-ACTION=%1$S aún necesita responder.
++# LOCALIZATION_NOTE(dialog.tooltip.attendeePartStat2.TENTATIVE): used to compose
++# dialog.tooltip.attendee.combined
++# %1$S - common name or email address of the attendee
++dialog.tooltip.attendeePartStat2.TENTATIVE=%1$S ha confirmado asistencia tentativamente.
++
++# LOCALIZATION_NOTE(dialog.tooltip.attendeeUserType2.INDIVIDUAL): used to compose
++# dialog.tooltip.attendeeRole2.*
++# %1$S - email address or common name <email address> representing individual attendee
++dialog.tooltip.attendeeUserType2.INDIVIDUAL=%1$S
++# LOCALIZATION_NOTE(dialog.tooltip.attendeeUserType2.GROUP): used to compose
++# dialog.tooltip.attendeeRole2.*
++# %1$S - email address or common name <email address> representing a group (e.g. a distribution list)
++dialog.tooltip.attendeeUserType2.GROUP=%1$S (grupo)
++# LOCALIZATION_NOTE(dialog.tooltip.attendeeUserType2.RESOURCE): used to compose
++# dialog.tooltip.attendeeRole2.*
++# %1$S - email address or common name <email address> representing a resource (e.g. projector)
++dialog.tooltip.attendeeUserType2.RESOURCE=%1$S (recurso)
++# LOCALIZATION_NOTE(dialog.tooltip.attendeeUserType2.ROOM): used to compose
++# dialog.tooltip.attendeeRole2.*
++# %1$S - email address or common name <email address> representing a room
++dialog.tooltip.attendeeUserType2.ROOM=%1$S (salón)
++# LOCALIZATION_NOTE(dialog.tooltip.attendeeUserType2.UNKNOWN): used to compose
++# dialog.tooltip.attendeeRole2.*
++# %1$S - email address or common name <email address> representing an attendee of unknown type
++dialog.tooltip.attendeeUserType2.UNKNOWN=%1$S
++
+ #File commands and dialogs
+ New = Nuevo
+ Open = Abrir 
+ filepickerTitleImport=Importar
+ filepickerTitleExport=Exportar
+ 
+ # Filters for export/import/open file picker.  %1$S will be replaced with
+ # wildmat used to filter files by extension, such as (*.html; *.htm).
+@@ -655,8 +722,22 @@ hideCalendar=Ocultar %1$S
+ showOnlyCalendar=Mostrar solo %1$S
+ 
+ # LOCALIZATION NOTE (modifyConflict)
+ # Used by the event dialog to resolve item modification conflicts.
+ modifyConflictPromptTitle=Conflicto de modificación de ítem
+ modifyConflictPromptMessage=El ítem que está siendo editado en el díalogo fue modificado desde que fue abierto.
+ modifyConflictPromptButton1=Sobreescribir los otros cambios
+ modifyConflictPromptButton2=Descargar estos cambios
++
++# LOCALIZATION_NOTE(dialog.attendee.append.delegatedFrom): this is appended behind an attendee name
++# in the tooltip and the visible name for an attendee in the event summary dialog - don't add
++# leading or trailing whitespaces here
++# %1$S - a single delegatee or a comma separated list of delegatees
++# delegation is different from simple invitation forwarding - in case of delegation the orignal
++# invited attendee gets replaced
++dialog.attendee.append.delegatedFrom=(delegado de %1$S)
++# LOCALIZATION_NOTE(dialog.attendee.append.delegatedTo): this is appended behind an attendee name
++# in the tooltip for an attendee in the event summary dialog - don't add leading or trailing
++# whitespaces here
++# delegation is different from simple invitation forwarding - in case of delegation the orignal
++# invited attendee gets replaced
++dialog.attendee.append.delegatedTo=(delegado a %1$S)
+diff --git a/calendar/chrome/calendar/timezones.properties b/calendar/chrome/calendar/timezones.properties
+--- a/calendar/chrome/calendar/timezones.properties
++++ b/calendar/chrome/calendar/timezones.properties
+@@ -454,8 +454,11 @@ pref.timezone.Europe.Busingen=Europa/Bus
+ 
+ #added with 0.1.2014b
+ pref.timezone.Antarctica.Troll=Antártida/Troll
+ 
+ #added with 2014j
+ pref.timezone.Asia.Chita=Asia/Chita
+ pref.timezone.Asia.Srednekolymsk=Asia/Srednekolymsk
+ pref.timezone.Pacific.Bougainville=Pacific/Bougainville
++
++#added with 2.2015g
++pref.timezone.America.Fort_Nelson=América/Fuerte Nelson
+diff --git a/calendar/chrome/lightning/lightning.properties b/calendar/chrome/lightning/lightning.properties
+--- a/calendar/chrome/lightning/lightning.properties
++++ b/calendar/chrome/lightning/lightning.properties
+@@ -24,16 +24,93 @@ imipHtml.location=Dirección:
+ imipHtml.when=Cuando:
+ imipHtml.organizer=Organizador:
+ imipHtml.description=Descripción:
+ imipHtml.comment=Comentario:
+ imipHtml.attendees=Asistentes:
+ imipHtml.canceledOccurrences=Apariciones canceladas:
+ imipHtml.modifiedOccurrences=Apariciones modificadas:
+ imipHtml.newLocation=Nueva dirección: %1$S
++# LOCALIZATION_NOTE(imipHtml.attendeeDelegatedFrom): this is appended behind an attendee name in the
++# email invitation preview - don't add leading/trailing whitespaces here
++# %1$S - a single delegator or a comma separated list of delegators
++imipHtml.attendeeDelegatedFrom=(delegado de %1$S)
++# LOCALIZATION_NOTE(imipHtml.attendeeDelegatedTo): this is appended behind an attendee name in the
++# email invitation preview - don't add leading/trailing whitespaces here
++# %1$S - a single delegatee or a comma separated list of delegatees
++imipHtml.attendeeDelegatedTo=(delegado a %1$S)
++
++# LOCALIZATION_NOTE(imipHtml.attendee.combined): tooltip for itip icon in email invitation preview.
++# Given an attendee loungeexample.org of type room is a mandatory participant and has accepted the
++# invitation, the tooltip would be:
++# lounge@example.org (room) is a required participant. lounge@example.org has confirmed attendance.
++# %1$S - value of imipHtml.attendeeRole2.*
++# %2$S - value of imipHtml.attendeePartStat2.*
++imipHtml.attendee.combined=%1$S %2$S
++# LOCALIZATION_NOTE(imipHtml.attendeeRole2.CHAIR): used to compose
++# imipHtml.attendee.combined
++# %1$S - value of imipHtml.attendeeUserType2.*
++imipHtml.attendeeRole2.CHAIR=%1$S preside el evento.
++# LOCALIZATION_NOTE(imipHtml.attendeeRole2.NON-PARTICIPANT): used to compose
++# imipHtml.attendee.combined
++# %1$S - value of imipHtml.attendeeUserType2.*
++imipHtml.attendeeRole2.NON-PARTICIPANT=%1$S es no-partícipe.
++# LOCALIZATION_NOTE(imipHtml.attendeeRole2.OPT-PARTICIPANT): used to compose
++# imipHtml.attendee.combined
++# %1$S - value of imipHtml.attendeeUserType2.*
++imipHtml.attendeeRole2.OPT-PARTICIPANT=%1$S es partícipe opcional.
++# LOCALIZATION_NOTE(imipHtml.attendeeRole2.REQ-PARTICIPANT): used to compose
++# imipHtml.attendee.combined
++# %1$S - value of imipHtml.attendeeUserType2.*
++imipHtml.attendeeRole2.REQ-PARTICIPANT=%1$S es partícipe requerido.
++
++# LOCALIZATION_NOTE(imipHtml.attendeePartStat2.ACCEPTED): used to compose
++# imipHtml.attendee.combined
++# %1$S - common name or email address of the attendee
++imipHtml.attendeePartStat2.ACCEPTED=%1$S ha confirmado asistencia.
++# LOCALIZATION_NOTE(imipHtml.attendeePartStat2.DECLINED): used to compose
++# imipHtml.attendee.combined
++# %1$S - common name or email address of the attendee
++imipHtml.attendeePartStat2.DECLINED=%1$S ha declinado asistencia.
++# LOCALIZATION_NOTE(imipHtml.attendeePartStat2.DELEGATED): used to compose
++# imipHtml.attendee.combined
++# %1$S - common name or email address of the attendee
++# %2$S - single delegatee or comma separated list of delegatees
++# delegation is different from invitation forwarding - in case of the former the original attendee
++# is replaced, while on the latter the receiver may take part additionally
++imipHtml.attendeePartStat2.DELEGATED=%1$S ha delegado asistencia a %2$S.
++# LOCALIZATION_NOTE(imipHtml.attendeePartStat2.NEEDS-ACTION): used to compose
++# imipHtml.attendee.combined
++# %1$S - common name or email address of the attendee
++imipHtml.attendeePartStat2.NEEDS-ACTION=%1$S aún necesita responder.
++# LOCALIZATION_NOTE(imipHtml.attendeePartStat2.TENTATIVE): used to compose
++# imipHtml.attendee.combined
++# %1$S - common name or email address of the attendee
++imipHtml.attendeePartStat2.TENTATIVE=%1$S ha confirmado asistencia tentativamente.
++
++# LOCALIZATION_NOTE(imipHtml.attendeeUserType2.INDIVIDUAL): used to compose
++# imipHtml.attendeeRole2.*
++# %1$S - email address or common name <email address> representing an individual attendee
++imipHtml.attendeeUserType2.INDIVIDUAL=%1$S
++# LOCALIZATION_NOTE(imipHtml.attendeeUserType2.GROUP): used to compose
++# imipHtml.attendeeRole2.*
++# %1$S - email address or common name <email address> representing a group (e.g. a distribution list)
++imipHtml.attendeeUserType2.GROUP=%1$S (grupo)
++# LOCALIZATION_NOTE(imipHtml.attendeeUserType2.RESOURCE): used to compose
++# imipHtml.attendeeRole2.*
++# %1$S - email address or common name <email address> representing a resource (e.g. projector)
++imipHtml.attendeeUserType2.RESOURCE=%1$S (recurso)
++# LOCALIZATION_NOTE(imipHtml.attendeeUserType2.ROOM): used to compose
++# imipHtml.attendeeRole2.*
++# %1$S - email address or common name <email address> representing a room
++imipHtml.attendeeUserType2.ROOM=%1$S (salón)
++# LOCALIZATION_NOTE(imipHtml.attendeeUserType2.UNKNOWN): used to compose
++# imipHtml.attendeeRole2.*
++# %1$S - email address or common name <email address> representing an attendee of unknown type
++imipHtml.attendeeUserType2.UNKNOWN=%1$S
+ 
+ imipAddToCalendar.label=Agregar al calendario
+ imipAddedItemToCal=Evento agregado al calendario
+ imipCanceledItem=El evento ha sido borrado
+ imipUpdatedItem=El evento ha sido actualizado
+ imipBarCancelText=Este mensaje contiene la cancelación de un evento.
+ imipBarRefreshText=Este mensaje solicita una actualización de un evento.
+ imipBarPublishText=Este mensaje contiene un evento.
+
